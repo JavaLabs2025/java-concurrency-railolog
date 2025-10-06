@@ -3,12 +3,12 @@ package org.labs.hierarchy;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.labs.Utils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,31 +16,44 @@ public class DinnerFactory {
 
     private final int programmersCount;
     private final int waitersCount;
+    private final int servingsCount;
     private final ExecutorService programmersPool;
     private final ExecutorService waitersPool;
 
     @SneakyThrows
-    public DinnerSummary setupAndRun() {
+    public DinnerResult setupAndRun() {
+        log.info(
+                "Starting dinner with \n{} programmers \n{} waiters \n{} servings",
+                programmersCount,
+                waitersCount,
+                servingsCount
+        );
+
         List<Spoon> spoons = createSpoons();
-        Restaurant restaurant = new Restaurant();
+        Restaurant restaurant = new Restaurant(servingsCount);
         List<Programmer> programmers = createProgrammers(restaurant, spoons);
         List<Waiter> waiters = createWaiters(restaurant);
+
+        long startTime = (long) (System.nanoTime() / 1e6);
 
         programmers.forEach(programmersPool::submit);
         waiters.forEach(waitersPool::submit);
 
+        // blocking current thread
         monitorRestaurant(restaurant);
+
+        long finishTime = (long) (System.nanoTime() / 1e6);
 
         programmersPool.shutdown();
         waitersPool.shutdown();
         try {
-            if (!programmersPool.awaitTermination(10, TimeUnit.SECONDS)) {
+            if (!programmersPool.awaitTermination(2, TimeUnit.SECONDS)) {
                 programmersPool.shutdownNow();
             }
         } catch (InterruptedException e) {
             programmersPool.shutdownNow();
         }
-//        programmers.forEach(p -> log.info("Programmer {} eat total {} servings", p.getId(), p.getTotalServings()));
+
         try {
             if (!waitersPool.awaitTermination(2, TimeUnit.SECONDS)) {
                 waitersPool.shutdownNow();
@@ -49,19 +62,11 @@ public class DinnerFactory {
             waitersPool.shutdownNow();
         }
 
-        Integer max = programmers.stream()
-                .map(Programmer::getTotalServings)
-                .max(Integer::compareTo)
-                .get();
-        Integer min = programmers.stream()
-                .map(Programmer::getTotalServings)
-                .min(Integer::compareTo)
-                .get();
-
-        return new DinnerSummary(
-                min,
-                max,
-                Utils.findMedian(programmers.stream().map(Programmer::getTotalServings).sorted().toList())
+        log.info("All servings were eaten in {} ms", finishTime - startTime);
+        return new DinnerResult(
+                programmers.stream()
+                        .map(Programmer::getTotalServings)
+                        .collect(Collectors.toList())
         );
     }
 

@@ -24,13 +24,13 @@ public class Waiter implements Runnable {
                     request.setUnserved();
                 }
             } else {
-                log.info("Waiter got no new request, checking if food is available");
+//                log.info("Waiter got no new request, checking if food is available");
                 if (!restaurant.isFoodAvailable()) {
-                    log.info("Waiter is finishing");
+//                    log.info("Waiter is finishing");
                     isFinished = true;
                 }
             }
         }
-        log.info("Waiter leaving execution method");
+//        log.info("Waiter leaving execution method");
     }
 }

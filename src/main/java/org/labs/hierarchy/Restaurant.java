@@ -7,8 +7,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
 
 public class Restaurant {
-    private final AtomicInteger foodServings = new AtomicInteger(1_000_000);
+    private final AtomicInteger foodServings;
     private final LinkedBlockingQueue<FoodRequest> requests = new LinkedBlockingQueue<>();
+
+    public Restaurant(
+            int servingsCount
+    ) {
+        this.foodServings = new AtomicInteger(servingsCount);
+    }
 
     @SneakyThrows
     public FoodRequest requestFood(int clientId) {
