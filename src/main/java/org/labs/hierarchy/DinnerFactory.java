@@ -66,7 +66,8 @@ public class DinnerFactory {
         return new DinnerResult(
                 programmers.stream()
                         .map(Programmer::getTotalServings)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                restaurant.getFoodServings()
         );
     }
 
