@@ -6,8 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @RequiredArgsConstructor
-public final class FoodRequest {
+public final class FoodRequest implements Comparable<FoodRequest> {
     private final int clientId;
+    private final int alreadyEaten;
     private final CountDownLatch latch = new CountDownLatch(1);
     private boolean isServed = false;
 
@@ -25,5 +26,11 @@ public final class FoodRequest {
     public void setUnserved() {
         isServed = false;
         latch.countDown();
+    }
+
+
+    @Override
+    public int compareTo(FoodRequest o) {
+        return Integer.compare(alreadyEaten, o.alreadyEaten);
     }
 }

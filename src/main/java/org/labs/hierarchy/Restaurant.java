@@ -1,6 +1,6 @@
 package org.labs.hierarchy;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 
 public class Restaurant {
     private final AtomicInteger foodServings;
-    private final LinkedBlockingQueue<FoodRequest> requests = new LinkedBlockingQueue<>();
+    private final PriorityBlockingQueue<FoodRequest> requests = new PriorityBlockingQueue<>();
 
     public Restaurant(
             int servingsCount
@@ -17,8 +17,8 @@ public class Restaurant {
     }
 
     @SneakyThrows
-    public FoodRequest requestFood(int clientId) {
-        FoodRequest request = new FoodRequest(clientId);
+    public FoodRequest requestFood(int clientId, int alreadyEaten) {
+        FoodRequest request = new FoodRequest(clientId, alreadyEaten);
         requests.put(request);
         return request;
     }

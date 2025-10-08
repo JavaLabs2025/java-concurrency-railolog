@@ -74,7 +74,7 @@ public class Programmer implements Runnable {
 
     @SneakyThrows
     private void requestFood() {
-        FoodRequest request = restaurant.requestFood(id);
+        FoodRequest request = restaurant.requestFood(id, totalServings);
 //        log.info("Programmer {} is waiting for food", id);
         boolean served = request.getServed();
 

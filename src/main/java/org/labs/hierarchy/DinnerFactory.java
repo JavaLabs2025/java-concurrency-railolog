@@ -75,7 +75,7 @@ public class DinnerFactory {
     private void monitorRestaurant(Restaurant restaurant) {
         while (restaurant.isFoodAvailable()) {
             Thread.sleep(500);
-            log.info("Restaurant have {} servings left", restaurant.getFoodServings());
+//            log.info("Restaurant have {} servings left", restaurant.getFoodServings());
         }
     }
 
